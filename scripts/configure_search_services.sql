@@ -1,4 +1,13 @@
 -- =====================================================
+-- Run this script after setup.sql and uploading the PDFs to the stage
+-- =====================================================
+
+USE ROLE ACCOUNTADMIN;
+USE DATABASE FINANCIAL_ADVISOR_DEMO_DB;
+USE SCHEMA ANALYTICS;
+USE WAREHOUSE FINANCIAL_ADVISOR_DEMO_WH;
+
+-- =====================================================
 -- Cortex Search Setup
 -- =====================================================
 
