@@ -1,0 +1,898 @@
+name: FINANCIAL_ADVISOR_MODEL
+tables:
+  - name: ADVISOR_PROFILE
+    base_table:
+      database: FINANCIAL_ADVISOR_DEMO_DB
+      schema: ANALYTICS
+      table: ADVISOR_PROFILE
+    dimensions:
+      - name: ADVISOR_ID
+        expr: ADVISOR_ID
+        description: Unique identifier for the advisor.
+        synonyms:
+          - advisor_key
+          - financial_advisor_id
+        data_type: VARCHAR(16777216)
+      - name: ADVISOR_NAME
+        expr: ADVISOR_NAME
+        data_type: VARCHAR(16777216)
+        sample_values:
+          - Michael Thompson
+        description: The name of the financial advisor.
+        synonyms:
+          - consultant_name
+          - financial_advisor_name
+      - name: TITLE
+        expr: TITLE
+        data_type: VARCHAR(16777216)
+        sample_values:
+          - Senior Wealth Manager
+        description: The job title of the advisor, indicating their level of experience and seniority within the organization.
+        synonyms:
+          - position
+          - job_title
+      - name: SPECIALIZATION
+        expr: SPECIALIZATION
+        data_type: VARCHAR(16777216)
+        sample_values:
+          - High Net Worth Individuals
+        description: This column captures the area of expertise or focus of an advisor, specifically indicating whether they specialize in serving high net worth individuals, implying that they have the skills and experience to manage complex financial situations and provide tailored advice to affluent clients.
+        synonyms:
+          - area_of_expertise
+          - professional_specialty
+      - name: BRANCH_LOCATION
+        expr: BRANCH_LOCATION
+        data_type: VARCHAR(16777216)
+        sample_values:
+          - Manhattan - Park Avenue
+        description: The physical location of the advisor's branch office.
+        synonyms:
+          - office_location
+          - branch_office
+      - name: LICENSE_TYPE
+        expr: LICENSE_TYPE
+        data_type: VARCHAR(16777216)
+        sample_values:
+          - Series 7/66
+        description: Type of license held by the advisor, indicating their qualifications to sell specific financial products, with Series 7 representing a general securities license and Series 66 representing a uniform combined state law license.
+        synonyms:
+          - certification_type
+          - professional_license
+      - name: CONTACT_PHONE
+        expr: CONTACT_PHONE
+        data_type: VARCHAR(16777216)
+        sample_values:
+          - (212) 555-0123
+        description: The phone number of the advisor that clients can use to contact them directly.
+        synonyms:
+          - phone_number
+          - business_phone
+      - name: CONTACT_EMAIL
+        expr: CONTACT_EMAIL
+        data_type: VARCHAR(16777216)
+        sample_values:
+          - michael.thompson@bank.com
+        description: The email address of the advisor that can be contacted for further information or guidance.
+        synonyms:
+          - email_address
+          - email_contact
+    facts:
+      - name: YEARS_EXPERIENCE
+        expr: YEARS_EXPERIENCE
+        data_type: NUMBER(38,0)
+        sample_values:
+          - '12'
+        description: The number of years the advisor has been providing financial guidance and services to clients.
+        synonyms:
+          - tenure
+          - experience_years
+      - name: CLIENTS_MANAGED
+        expr: CLIENTS_MANAGED
+        data_type: NUMBER(38,0)
+        sample_values:
+          - '8'
+        description: The number of clients managed by an advisor.
+        synonyms:
+          - clients_handled
+          - managed_accounts
+      - name: TOTAL_AUM
+        expr: TOTAL_AUM
+        data_type: NUMBER(38,0)
+        sample_values:
+          - '18500000'
+        description: Total Assets Under Management (AUM) represents the total market value of all assets managed by the advisor, including investments, securities, and other financial assets, in this case, $18,500,000.
+        synonyms:
+          - total_assets_managed
+          - assets_under_management
+    description: ''
+    synonyms: []
+    primary_key:
+      columns:
+        - ADVISOR_ID
+  - name: CLIENT_GOALS_PREFERENCES
+    base_table:
+      database: FINANCIAL_ADVISOR_DEMO_DB
+      schema: ANALYTICS
+      table: CLIENT_GOALS_PREFERENCES
+    dimensions:
+      - name: CLIENT_ID
+        expr: CLIENT_ID
+        data_type: VARCHAR(16777216)
+        sample_values:
+          - C001
+        description: Unique identifier for each client in the system, used to track and manage their goals and preferences.
+        synonyms:
+          - customer_id
+          - client_number
+      - name: GOAL_ID
+        expr: GOAL_ID
+        data_type: VARCHAR(16777216)
+        sample_values:
+          - G001
+        description: Unique identifier for a client's specific goal or objective.
+        synonyms:
+          - objective_id
+          - goal_identifier
+      - name: GOAL_TYPE
+        expr: GOAL_TYPE
+        data_type: VARCHAR(16777216)
+        sample_values:
+          - Retirement
+        description: The type of financial goal the client is trying to achieve, such as saving for retirement, funding education expenses, or preserving wealth.
+        synonyms:
+          - objective_category
+          - goal_classification
+      - name: GOAL_DESCRIPTION
+        expr: GOAL_DESCRIPTION
+        data_type: VARCHAR(16777216)
+        sample_values:
+          - Retirement Planning
+        description: The client's financial objective or purpose for investing, such as planning for retirement, saving for a child's education, or managing estate assets.
+        synonyms:
+          - goal_summary
+          - objective_description
+        cortex_search_service:
+          database: FINANCIAL_ADVISOR_DEMO_DB
+          schema: ANALYTICS
+          service: CLIENT_TRANSCRIPTS_SEARCH_SERVICE
+      - name: PRIORITY
+        expr: PRIORITY
+        data_type: VARCHAR(16777216)
+        sample_values:
+          - High
+        description: Indicates the level of importance assigned to a client's goal or preference, with High being the most critical, Medium being moderately important, and Low being the least critical.
+        synonyms:
+          - importance
+          - urgency
+      - name: RISK_TOLERANCE_GOAL
+        expr: RISK_TOLERANCE_GOAL
+        data_type: VARCHAR(16777216)
+        sample_values:
+          - Moderate
+        description: The client's comfort level with the possibility of losing some or all of their investment in pursuit of returns, categorized as Moderate (willing to take on some level of risk), Conservative (prefers to minimize risk), or Moderate-Conservative (falls somewhere in between).
+        synonyms:
+          - risk_appetite
+          - risk_tolerance_level
+      - name: NOTES
+        expr: NOTES
+        data_type: VARCHAR(16777216)
+        sample_values:
+          - Target 5M by age 60 for comfortable retirement
+        description: This column captures the client's personal goals and preferences related to their financial planning, including specific targets, family obligations, and wealth preservation objectives.
+        synonyms:
+          - comments
+          - remarks
+        cortex_search_service:
+          database: FINANCIAL_ADVISOR_DEMO_DB
+          schema: ANALYTICS
+          service: CLIENT_TRANSCRIPTS_SEARCH_SERVICE
+    time_dimensions:
+      - name: TARGET_DATE
+        expr: TARGET_DATE
+        data_type: DATE
+        sample_values:
+          - '2039-12-31'
+        description: The date by which a client aims to achieve a specific financial goal or milestone.
+        synonyms:
+          - goal_date
+          - deadline
+    facts:
+      - name: TARGET_VALUE
+        expr: TARGET_VALUE
+        data_type: NUMBER(38,0)
+        sample_values:
+          - '5000000'
+        description: The target value represents the client's desired financial goal or objective, typically a specific amount of money they aim to achieve or accumulate, such as a savings target, investment goal, or retirement fund objective.
+        synonyms:
+          - goal_amount
+          - target_amount
+      - name: CURRENT_PROGRESS
+        expr: CURRENT_PROGRESS
+        data_type: NUMBER(38,1)
+        sample_values:
+          - '57.0'
+        description: The current progress made by the client towards achieving their goal, represented as a numerical value.
+        synonyms:
+          - progress_status
+          - progress_percentage
+    description: ''
+    synonyms: []
+    primary_key:
+      columns:
+        - GOAL_ID
+  - name: CLIENT_PRIORITY_ALERTS
+    base_table:
+      database: FINANCIAL_ADVISOR_DEMO_DB
+      schema: ANALYTICS
+      table: CLIENT_PRIORITY_ALERTS
+    dimensions:
+      - name: ADVISOR_ID
+        expr: ADVISOR_ID
+        data_type: VARCHAR(16777216)
+        sample_values:
+          - ADV001
+        description: Unique identifier for the advisor assigned to the client.
+        synonyms:
+          - consultant_id
+          - financial_advisor_id
+      - name: CLIENT_ID
+        expr: CLIENT_ID
+        data_type: VARCHAR(16777216)
+        sample_values:
+          - C003
+        description: Unique identifier for the client associated with the alert.
+        synonyms:
+          - customer_id
+          - client_number
+      - name: ALERT_TYPE
+        expr: ALERT_TYPE
+        data_type: VARCHAR(16777216)
+        sample_values:
+          - Performance
+        description: The type of alert triggered for a client, indicating the reason for the alert, such as a performance issue, a risk threshold breach, or a rebalancing requirement.
+        synonyms:
+          - alert_category
+          - notification_type
+      - name: PRIORITY_LEVEL
+        expr: PRIORITY_LEVEL
+        data_type: VARCHAR(16777216)
+        sample_values:
+          - High
+        description: The level of priority assigned to a client alert, indicating the severity or urgency of the alert, with possible values being High, Medium, or Low.
+        synonyms:
+          - urgency_level
+          - alert_severity
+      - name: ALERT_DESCRIPTION
+        expr: ALERT_DESCRIPTION
+        data_type: VARCHAR(16777216)
+        sample_values:
+          - Portfolio underperforming benchmark by 8.2% YTD
+        description: This column stores the descriptions of alerts triggered for a client's portfolio, highlighting specific issues or concerns that require attention, such as underperformance, excessive sector concentration, or suboptimal asset allocation.
+        synonyms:
+          - alert_text
+          - alert_message
+        cortex_search_service:
+          database: FINANCIAL_ADVISOR_DEMO_DB
+          schema: ANALYTICS
+          service: CLIENT_TRANSCRIPTS_SEARCH_SERVICE
+      - name: RECOMMENDED_ACTION
+        expr: RECOMMENDED_ACTION
+        data_type: VARCHAR(16777216)
+        sample_values:
+          - Review and rebalance conservative allocation
+        description: The recommended course of action to address a specific alert or issue related to a client's investment portfolio, as determined by the system or a financial advisor.
+        synonyms:
+          - suggested_action
+          - recommended_step
+        cortex_search_service:
+          database: FINANCIAL_ADVISOR_DEMO_DB
+          schema: ANALYTICS
+          service: CLIENT_TRANSCRIPTS_SEARCH_SERVICE
+    time_dimensions:
+      - name: LAST_CONTACT_DATE
+        expr: LAST_CONTACT_DATE
+        data_type: DATE
+        sample_values:
+          - '2024-11-05'
+        description: The date of the most recent interaction or communication with the client.
+        synonyms:
+          - last_client_interaction
+          - most_recent_contact
+    facts:
+      - name: DAYS_SINCE_ALERT
+        expr: DAYS_SINCE_ALERT
+        data_type: NUMBER(38,0)
+        sample_values:
+          - '15'
+        description: The number of days since the client last received an alert.
+        synonyms:
+          - days_since_notification
+          - alert_age
+      - name: ESTIMATED_TIME_TO_RESOLVE
+        expr: ESTIMATED_TIME_TO_RESOLVE
+        data_type: NUMBER(38,0)
+        sample_values:
+          - '45'
+        description: The estimated time, in minutes, required to resolve a client priority alert.
+        synonyms:
+          - estimated_resolution_time
+          - time_to_resolution
+    description: ''
+    synonyms: []
+    primary_key:
+      columns:
+        - CLIENT_ID
+        - ADVISOR_ID
+        - ALERT_TYPE
+  - name: CLIENT_PROFILE
+    base_table:
+      database: FINANCIAL_ADVISOR_DEMO_DB
+      schema: ANALYTICS
+      table: CLIENT_PROFILE
+    dimensions:
+      - name: CLIENT_ID
+        expr: CLIENT_ID
+        data_type: VARCHAR(16777216)
+        sample_values:
+          - C001
+        description: Unique identifier assigned to each client in the system.
+        synonyms:
+          - customer_id
+          - client_number
+      - name: CLIENT_NAME
+        expr: CLIENT_NAME
+        data_type: VARCHAR(16777216)
+        sample_values:
+          - John Mitchell
+        description: The name of the client, as recorded in the client profile.
+        synonyms:
+          - customer_name
+          - account_holder
+        cortex_search_service:
+          database: FINANCIAL_ADVISOR_DEMO_DB
+          schema: ANALYTICS
+          service: CLIENT_TRANSCRIPTS_SEARCH_SERVICE
+      - name: RISK_TOLERANCE
+        expr: RISK_TOLERANCE
+        data_type: VARCHAR(16777216)
+        sample_values:
+          - Moderate
+        description: |-
+          A measure of the client's willingness to take on investment risk, with the following categories: 
+          - Conservative: prefers to preserve capital and avoid losses, even if it means lower potential returns
+          - Moderate: willing to take on some level of risk to achieve moderate returns
+          - Aggressive: willing to take on higher levels of risk in pursuit of higher potential returns
+        synonyms:
+          - risk_appetite
+          - risk_profile
+      - name: INVESTMENT_GOALS
+        expr: INVESTMENT_GOALS
+        data_type: VARCHAR(16777216)
+        sample_values:
+          - Growth and Income
+        description: 'The investment objectives of the client, which can be one of the following: Growth and Income (seeking both capital appreciation and regular income), Capital Appreciation (focusing on long-term growth), or Income and Preservation (prioritizing regular income and protecting the initial investment).'
+        synonyms:
+          - investment_objectives
+          - financial_goals
+        cortex_search_service:
+          database: FINANCIAL_ADVISOR_DEMO_DB
+          schema: ANALYTICS
+          service: CLIENT_TRANSCRIPTS_SEARCH_SERVICE
+      - name: ADVISOR_ID
+        expr: ADVISOR_ID
+        data_type: VARCHAR(16777216)
+        sample_values:
+          - ADV001
+        description: Unique identifier for the financial advisor assigned to the client.
+        synonyms:
+          - financial_advisor_id
+          - assigned_advisor_id
+    time_dimensions:
+      - name: LAST_REVIEW_DATE
+        expr: LAST_REVIEW_DATE
+        data_type: DATE
+        sample_values:
+          - '2024-09-15'
+        description: Date of the most recent review or assessment of the client's profile.
+        synonyms:
+          - last_reviewed
+          - review_date
+      - name: CLIENT_SINCE
+        expr: CLIENT_SINCE
+        data_type: DATE
+        sample_values:
+          - '2019-03-15'
+        description: Date when the client first started doing business with the company.
+        synonyms:
+          - onboarding_date
+          - client_start_date
+    facts:
+      - name: AGE
+        expr: AGE
+        data_type: NUMBER(38,0)
+        sample_values:
+          - '45'
+        description: The age of the client in years.
+        synonyms:
+          - years_old
+          - client_age
+      - name: INVESTMENT_HORIZON_YEARS
+        expr: INVESTMENT_HORIZON_YEARS
+        data_type: NUMBER(38,0)
+        sample_values:
+          - '15'
+        description: The number of years a client is willing to hold onto their investments before they need the money, indicating their long-term or short-term investment strategy.
+        synonyms:
+          - time_horizon
+          - investment_timeframe
+      - name: TOTAL_PORTFOLIO_VALUE
+        expr: TOTAL_PORTFOLIO_VALUE
+        data_type: NUMBER(38,0)
+        sample_values:
+          - '2850000'
+        description: The total value of all assets held in a client's investment portfolio.
+        synonyms:
+          - total_investments
+          - portfolio_worth
+      - name: CASH_BALANCE
+        expr: CASH_BALANCE
+        data_type: NUMBER(38,0)
+        sample_values:
+          - '285000'
+        description: The current cash balance of the client's account, representing the total amount of liquid funds available for investment or withdrawal.
+        synonyms:
+          - liquid_assets
+          - available_funds
+    description: ''
+    synonyms: []
+    primary_key:
+      columns:
+        - CLIENT_ID
+  - name: PERFORMANCE_METRICS
+    base_table:
+      database: FINANCIAL_ADVISOR_DEMO_DB
+      schema: ANALYTICS
+      table: PERFORMANCE_METRICS
+    dimensions:
+      - name: CLIENT_ID
+        expr: CLIENT_ID
+        data_type: VARCHAR(16777216)
+        sample_values:
+          - C001
+        description: Unique identifier for the client associated with the performance metrics.
+        synonyms:
+          - customer_id
+          - client_number
+    time_dimensions:
+      - name: PERIOD_END_DATE
+        expr: PERIOD_END_DATE
+        data_type: DATE
+        sample_values:
+          - '2022-01-31'
+        description: The date that marks the end of a performance measurement period, typically used to track and analyze key performance indicators (KPIs) over time.
+        synonyms:
+          - reporting_date
+          - end_of_period
+    facts:
+      - name: PORTFOLIO_VALUE
+        expr: PORTFOLIO_VALUE
+        data_type: NUMBER(38,0)
+        sample_values:
+          - '2850000'
+        description: The total value of all assets within a portfolio, representing the overall worth of the investment holdings.
+        synonyms:
+          - portfolio_size
+          - total_portfolio
+      - name: PORTFOLIO_RETURN_MTD
+        expr: PORTFOLIO_RETURN_MTD
+        data_type: NUMBER(38,1)
+        sample_values:
+          - '0.0'
+        description: The percentage return of the portfolio for the month to date.
+        synonyms:
+          - monthly_portfolio_return
+          - portfolio_monthly_gain
+      - name: PORTFOLIO_RETURN_YTD
+        expr: PORTFOLIO_RETURN_YTD
+        data_type: NUMBER(38,1)
+        sample_values:
+          - '0.0'
+        description: The percentage return of the portfolio year-to-date, representing the total gain or loss of the portfolio from the beginning of the year to the current date.
+        synonyms:
+          - year_to_date_portfolio_return
+          - ytd_portfolio_return
+      - name: PORTFOLIO_RETURN_1YR
+        expr: PORTFOLIO_RETURN_1YR
+        data_type: NUMBER(38,1)
+        sample_values:
+          - '0.0'
+        description: The one-year return of the portfolio, representing the percentage change in value over the past year.
+        synonyms:
+          - annual_portfolio_return
+          - yearly_portfolio_return
+      - name: SP500_RETURN_MTD
+        expr: SP500_RETURN_MTD
+        data_type: NUMBER(38,1)
+        sample_values:
+          - '0.0'
+        description: The monthly total return of the S&P 500 index, representing the percentage change in value of the index on a month-to-date basis.
+        synonyms:
+          - S&P500_monthly_return
+          - S&P500_MTD_performance
+      - name: SP500_RETURN_YTD
+        expr: SP500_RETURN_YTD
+        data_type: NUMBER(38,1)
+        sample_values:
+          - '0.0'
+        description: The year-to-date return of the S&P 500 stock market index, representing the percentage change in value of the index since the beginning of the year.
+        synonyms:
+          - S&P_500_YTD_RETURN
+          - SP500_YEAR_TO_DATE_PERFORMANCE
+      - name: SP500_RETURN_1YR
+        expr: SP500_RETURN_1YR
+        data_type: NUMBER(38,1)
+        sample_values:
+          - '0.0'
+        description: The one-year return of the S&P 500 index, representing the percentage change in value of the index over the past year.
+        synonyms:
+          - SP500_ANNUAL_RETURN
+          - S&P500_1YR_PERFORMANCE
+      - name: BENCHMARK_ALPHA
+        expr: BENCHMARK_ALPHA
+        data_type: NUMBER(38,1)
+        sample_values:
+          - '0.0'
+        description: The BENCHMARK_ALPHA column represents a key performance indicator (KPI) that measures the excess return of an investment over the return of a benchmark index, indicating the investment's performance relative to the broader market.
+        synonyms:
+          - alpha_value
+          - excess_return
+      - name: SHARPE_RATIO
+        expr: SHARPE_RATIO
+        data_type: NUMBER(38,2)
+        sample_values:
+          - '0.85'
+        description: The Sharpe Ratio is a risk-adjusted return metric that measures the excess return of an investment over the risk-free rate, relative to its volatility, providing a standardized way to evaluate the performance of different investments.
+        synonyms:
+          - risk_adjusted_return
+          - sharpe_measure
+      - name: MAX_DRAWDOWN
+        expr: MAX_DRAWDOWN
+        data_type: NUMBER(38,1)
+        sample_values:
+          - '-5.2'
+        description: Maximum peak-to-trough decline in value, representing the largest loss in a portfolio or investment during a specific period.
+        synonyms:
+          - max_loss
+          - largest_drawdown
+      - name: VOLATILITY
+        expr: VOLATILITY
+        data_type: NUMBER(38,1)
+        sample_values:
+          - '12.5'
+        description: A measure of the standard deviation of investment returns, indicating the degree of uncertainty or risk associated with the investment's performance.
+        synonyms:
+          - risk_level
+          - price_volatility
+    description: ''
+    synonyms: []
+    primary_key:
+      columns:
+        - CLIENT_ID
+        - PERIOD_END_DATE
+  - name: PORTFOLIO_HOLDINGS
+    base_table:
+      database: FINANCIAL_ADVISOR_DEMO_DB
+      schema: ANALYTICS
+      table: PORTFOLIO_HOLDINGS
+    dimensions:
+      - name: CLIENT_ID
+        expr: CLIENT_ID
+        data_type: VARCHAR(16777216)
+        sample_values:
+          - C001
+        description: Unique identifier for the client whose portfolio holdings are being tracked.
+        synonyms:
+          - customer_id
+          - client_number
+      - name: ASSET_SYMBOL
+        expr: ASSET_SYMBOL
+        data_type: VARCHAR(16777216)
+        sample_values:
+          - AAPL
+        description: The unique identifier for the asset held in the portfolio, such as a stock ticker symbol.
+        synonyms:
+          - stock_symbol
+          - ticker
+        cortex_search_service:
+          database: FINANCIAL_ADVISOR_DEMO_DB
+          schema: ANALYTICS
+          service: EQUITY_RESEARCH_SEARCH_SERVICE
+      - name: ASSET_NAME
+        expr: ASSET_NAME
+        data_type: VARCHAR(16777216)
+        sample_values:
+          - Apple Inc
+        description: The name of the asset held in the portfolio, such as a company or security.
+        synonyms:
+          - security_name
+          - investment_name
+        cortex_search_service:
+          database: FINANCIAL_ADVISOR_DEMO_DB
+          schema: ANALYTICS
+          service: EQUITY_RESEARCH_SEARCH_SERVICE
+      - name: ASSET_CLASS
+        expr: ASSET_CLASS
+        data_type: VARCHAR(16777216)
+        sample_values:
+          - Equity
+        description: The type of investment held in the portfolio, such as stocks (Equity), exchange-traded funds (ETF), or debt securities (Bond).
+        synonyms:
+          - investment_type
+          - asset_category
+      - name: SECTOR
+        expr: SECTOR
+        data_type: VARCHAR(16777216)
+        sample_values:
+          - Technology
+        description: The sector classification of the portfolio holdings, categorizing the industry or market segment to which the investment belongs.
+        synonyms:
+          - industry
+          - market_segment
+    time_dimensions:
+      - name: PURCHASE_DATE
+        expr: PURCHASE_DATE
+        data_type: DATE
+        sample_values:
+          - '2022-01-15'
+        description: Date on which the security was purchased and added to the portfolio.
+        synonyms:
+          - acquisition_date
+          - buy_date
+      - name: LAST_UPDATED
+        expr: LAST_UPDATED
+        data_type: DATE
+        sample_values:
+          - '2024-12-01'
+        description: Date when the portfolio holdings were last updated.
+        synonyms:
+          - last_modified
+          - updated_at
+    facts:
+      - name: SHARES_HELD
+        expr: SHARES_HELD
+        data_type: NUMBER(38,0)
+        sample_values:
+          - '1250'
+        description: The number of shares of a particular security held in the portfolio.
+        synonyms:
+          - shares_owned
+          - quantity_held
+      - name: AVG_COST_BASIS
+        expr: AVG_COST_BASIS
+        data_type: NUMBER(38,2)
+        sample_values:
+          - '145.50'
+        description: The average cost basis of a security in the portfolio, representing the total cost of the investment divided by the number of shares held.
+        synonyms:
+          - average_cost
+          - cost_basis
+      - name: CURRENT_PRICE
+        expr: CURRENT_PRICE
+        data_type: NUMBER(38,2)
+        sample_values:
+          - '198.50'
+        description: The current market price of a security held in the portfolio.
+        synonyms:
+          - market_price
+          - share_price
+      - name: MARKET_VALUE
+        expr: MARKET_VALUE
+        data_type: NUMBER(38,0)
+        sample_values:
+          - '248125'
+        description: The total value of a particular investment or portfolio at a given point in time, calculated by multiplying the number of shares held by the current market price of the security.
+        synonyms:
+          - total_value
+          - investment_value
+      - name: ALLOCATION_PERCENTAGE
+        expr: ALLOCATION_PERCENTAGE
+        data_type: NUMBER(38,1)
+        sample_values:
+          - '8.7'
+        description: The percentage of the portfolio's total value that is allocated to a specific holding.
+        synonyms:
+          - portfolio_percentage
+          - asset_allocation
+    description: ''
+    synonyms: []
+    primary_key:
+      columns:
+        - CLIENT_ID
+        - ASSET_SYMBOL
+relationships:
+  - name: Advisor_Profile_to_Client_Profile
+    left_table: CLIENT_PROFILE
+    relationship_columns:
+      - left_column: ADVISOR_ID
+        right_column: ADVISOR_ID
+    right_table: ADVISOR_PROFILE
+    join_type: inner
+    relationship_type: many_to_one
+  - name: Client_Goals_to_Client_Profile
+    left_table: CLIENT_GOALS_PREFERENCES
+    relationship_columns:
+      - left_column: CLIENT_ID
+        right_column: CLIENT_ID
+    right_table: CLIENT_PROFILE
+    join_type: inner
+    relationship_type: many_to_one
+  - name: Portfolio_Holdings_to_Client_Profile
+    left_table: PORTFOLIO_HOLDINGS
+    relationship_columns:
+      - left_column: CLIENT_ID
+        right_column: CLIENT_ID
+    right_table: CLIENT_PROFILE
+    join_type: inner
+    relationship_type: many_to_one
+  - name: Performance_Metrics_to_Client_Profile
+    left_table: PERFORMANCE_METRICS
+    relationship_columns:
+      - left_column: CLIENT_ID
+        right_column: CLIENT_ID
+    right_table: CLIENT_PROFILE
+    join_type: inner
+    relationship_type: many_to_one
+  - name: Priority_Alerts_to_Client_Profile
+    left_table: CLIENT_PRIORITY_ALERTS
+    relationship_columns:
+      - left_column: CLIENT_ID
+        right_column: CLIENT_ID
+    right_table: CLIENT_PROFILE
+    join_type: inner
+    relationship_type: many_to_one
+  - name: Priority_Alerts_to_Advisor_Profile
+    left_table: CLIENT_PRIORITY_ALERTS
+    relationship_columns:
+      - left_column: ADVISOR_ID
+        right_column: ADVISOR_ID
+    right_table: ADVISOR_PROFILE
+    join_type: inner
+    relationship_type: many_to_one
+verified_queries:
+  - name: Which clients have portfolios underperforming their benchmarks by more than 5%?
+    question: Which clients have portfolios underperforming their benchmarks by more than 5%?
+    sql: |-
+      WITH latest_performance AS (
+        SELECT
+          client_id,
+          portfolio_return_ytd,
+          sp500_return_ytd,
+          benchmark_alpha,
+          ROW_NUMBER() OVER (
+            PARTITION BY client_id
+            ORDER BY
+              period_end_date DESC NULLS LAST
+          ) AS rn
+        FROM
+          performance_metrics
+      ),
+      underperforming_clients AS (
+        SELECT
+          client_id,
+          portfolio_return_ytd,
+          sp500_return_ytd,
+          benchmark_alpha,
+          (portfolio_return_ytd - sp500_return_ytd) AS underperformance
+        FROM
+          latest_performance
+        WHERE
+          rn = 1
+          AND (portfolio_return_ytd - sp500_return_ytd) < -0.05
+      )
+      SELECT
+        cp.client_name,
+        uc.portfolio_return_ytd,
+        uc.sp500_return_ytd,
+        uc.underperformance,
+        uc.benchmark_alpha
+      FROM
+        underperforming_clients AS uc
+        INNER JOIN client_profile AS cp ON uc.client_id = cp.client_id
+      ORDER BY
+        uc.underperformance ASC
+    use_as_onboarding_question: false
+    verified_by: Cameron Shimmin
+    verified_at: 1760046835
+  - name: |
+      Summarize the key concerns from Emily Rodriguez's recent call transcripts
+    question: |
+      Summarize the key concerns from Emily Rodriguez's recent call transcripts
+    sql: |-
+      SELECT
+        cp.client_name,
+        cgp.goal_description AS call_transcript,
+        cpa.alert_description AS alert_transcript,
+        cpa.recommended_action AS recommended_action
+      FROM
+        client_profile AS cp
+        LEFT JOIN client_goals_preferences AS cgp ON cp.client_id = cgp.client_id
+        LEFT JOIN client_priority_alerts AS cpa ON cp.client_id = cpa.client_id
+      WHERE
+        cp.client_name LIKE '%Emily Rodriguez%'
+        OR cgp.goal_description LIKE '%Emily Rodriguez%'
+        OR cpa.alert_description LIKE '%Emily Rodriguez%'
+        OR cpa.recommended_action LIKE '%Emily Rodriguez%'
+    use_as_onboarding_question: false
+    verified_by: Cameron Shimmin
+    verified_at: 1760046861
+  - name: What are the priority alerts for clients I need to contact this week?
+    question: What are the priority alerts for clients I need to contact this week?
+    sql: |-
+      SELECT
+        cpa.client_id,
+        cp.client_name,
+        cpa.alert_type,
+        cpa.priority_level,
+        cpa.alert_description,
+        cpa.recommended_action,
+        cpa.last_contact_date,
+        cpa.days_since_alert,
+        cpa.estimated_time_to_resolve
+      FROM
+        client_priority_alerts AS cpa
+        INNER JOIN client_profile AS cp ON cpa.client_id = cp.client_id
+      WHERE
+        cpa.last_contact_date <= DATEADD(DAY, -7, CURRENT_DATE)
+        OR cpa.days_since_alert >= 7
+      ORDER BY
+        cpa.priority_level DESC,
+        cpa.days_since_alert DESC NULLS LAST
+    use_as_onboarding_question: false
+    verified_by: Cameron Shimmin
+    verified_at: 1760046899
+  - name: Show me progress toward retirement goals for clients aged 55 and above
+    question: Show me progress toward retirement goals for clients aged 55 and above
+    sql: |-
+      SELECT
+        cp.client_id,
+        cp.client_name,
+        cp.age,
+        cgp.goal_type,
+        cgp.goal_description,
+        cgp.target_value,
+        cgp.current_progress,
+        cgp.target_date,
+        cgp.priority
+      FROM
+        client_goals_preferences AS cgp
+        INNER JOIN client_profile AS cp ON cgp.client_id = cp.client_id
+      WHERE
+        cp.age >= 55
+        AND cgp.goal_type = 'Retirement'
+      ORDER BY
+        cgp.current_progress DESC NULLS LAST
+    use_as_onboarding_question: false
+    verified_by: Cameron Shimmin
+    verified_at: 1760046933
+  - name: |
+      Which high-net-worth clients haven't been contacted in the last 30 days?
+    question: |
+      Which high-net-worth clients haven't been contacted in the last 30 days?
+    sql: |-
+      SELECT
+        cp.client_id,
+        cp.client_name,
+        cp.total_portfolio_value,
+        cpa.last_contact_date,
+        DATEDIFF(DAY, cpa.last_contact_date, CURRENT_DATE) AS days_since_contact
+      FROM
+        client_profile AS cp
+        INNER JOIN client_priority_alerts AS cpa ON cp.client_id = cpa.client_id
+      WHERE
+        cp.total_portfolio_value >= 1000000
+        AND cpa.last_contact_date < DATEADD(DAY, -30, CURRENT_DATE)
+      ORDER BY
+        cpa.last_contact_date ASC
+    use_as_onboarding_question: false
+    verified_by: Cameron Shimmin
+    verified_at: 1760046952
