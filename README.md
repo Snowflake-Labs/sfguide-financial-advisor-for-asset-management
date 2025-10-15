@@ -45,7 +45,7 @@ Once the stage is created, you can manually upload your PDF research documents d
 
 1. **Navigate to your Stage in Snowsight:**
 
-   * In the Snowsight left-hand navigation pane, go to **Data**.
+   * In the Snowsight left-hand navigation pane, go to **Catalog -> Database Explorer**.
    * Expand your database (`FINANCIAL_ADVISOR_DEMO_DB`).
    * Expand the schema (`ANALYTICS`).
    * Click on **Stages**.
@@ -54,14 +54,36 @@ Once the stage is created, you can manually upload your PDF research documents d
 2. **Upload the Files:**
 
    * Download all the PDF files from `scripts/pdfs/` directory
-   * Click the **+ Upload** button in the top-right corner.
-   * A file explorer window will open.
-   * Select all PDF files from your local machine (equity research reports, 10-K excerpts, Fed minutes, and market commentary).
-   * Click **Open** to begin the upload. You will see a progress bar for each file, and they will appear in the stage's file list once complete.
+   * Click the **+ Files** button in the top-right corner.
+   * Click **Browse**
+   * Select all downloaded PDF files (equity research reports, 10-K excerpts, Fed minutes, and market commentary) then select **Open**.
+   * Click **Upload** to begin the upload. You will see a progress bar for each file, and they will appear in the stage's file list once complete.
 
 ***
 
-### **3. Configuring Search Services**
+### **3. Uploading the Semantic Model**
+
+The semantic model defines the structure of your data and enables natural language queries through Cortex Analyst. You need to upload the semantic model YAML file to make it available to the agent.
+
+1. **Navigate to the Semantic Models Stage in Snowsight:**
+
+   * In the Snowsight left-hand navigation pane, go to **Catalog -> Database Explorer**.
+   * Expand your database (`FINANCIAL_ADVISOR_DEMO_DB`).
+   * Expand the schema (`ANALYTICS`).
+   * Click on **Stages**.
+   * Click on the `SEMANTIC_MODELS_STAGE` stage.
+
+2. **Upload the Semantic Model File:**
+
+   * Download the `FINANCIAL_ADVISOR_MODEL.yaml` file from the `scripts/semantic_models/` directory
+   * Click the **+ Files** button in the top-right corner.
+   * Click **Browse**
+   * Select the `FINANCIAL_ADVISOR_MODEL.yaml` file then **Open**.
+   * Click **Upload** to begin the upload. Once complete, the file will appear in the stage's file list.
+
+***
+
+### **4. Configuring Search Services**
 
 With your research documents uploaded, you need to configure the Cortex Search Services that will enable the agent to search through unstructured content.
 
@@ -75,11 +97,11 @@ Run all SQL commands in `scripts/configure_search_services.sql` in a Snowflake W
 
 ***
 
-### **4. Creating the Cortex Agent**
+### **5. Creating the Cortex Agent**
 
-With your data loaded and search services configured, you can now create the agent in the Snowflake UI and connect it to your semantic models and search services.
+With your data loaded, semantic model uploaded, and search services configured, you can now create the agent in the Snowflake UI and connect it to your semantic models and search services.
 
-1. **Navigate to the Snowflake Intelligence UI:**
+1. **Create the Agent:**
 
    * In Snowsight, go to **AI & ML**.
    * Select **Agents**.
@@ -97,8 +119,8 @@ With your data loaded and search services configured, you can now create the age
 3. **Add the Semantic Model as a Tool:**
 
    * In the agent creation wizard, go to the **Tools** tab.
-   * Under the "Cortex Analyst" heading, click the **+ Add** button.
-   * Select **Semantic Model File**.
+   * For the "Cortex Analyst" section, click the **+ Add** button.
+   * Select the **Semantic Model File** option.
    * Choose the following:
      * **Database:** `FINANCIAL_ADVISOR_DEMO_DB`
      * **Schema:** `ANALYTICS`
