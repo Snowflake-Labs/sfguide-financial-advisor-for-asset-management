@@ -11,6 +11,8 @@ This repo contains everything you need to get started with Snowflake Intelligenc
 ├── scripts/
 │   ├── setup.sql                         # Database setup script
 │   ├── configure_search_services.sql     # Search services configuration
+│   ├── semantic_models/                  # Semantic model definitions
+│   │   └── FINANCIAL_ADVISOR_MODEL.yaml
 │   └── pdfs/                             # Financial research documents
 │       ├── AAPL_10K_excerpts_2024.pdf
 │       ├── MSFT_10K_excerpts_2024.pdf
