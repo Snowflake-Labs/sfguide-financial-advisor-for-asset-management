@@ -245,6 +245,21 @@ With your data loaded, semantic model uploaded, and search services configured, 
    * Review the agent's details, tools, and orchestration settings.
    * Click **Save**.
 
+***
+
+### **Using Your Agent**
+
+1. **Navigate to Snowflake Intelligence:**
+   * In Snowsight, go to **AI & ML**.
+   * Select **Snowflake Intelligence**.
+
+2. **Select Your Agent:**
+   * Choose `FINANCIAL_ADVISOR_AGENT` from the agent dropdown.
+
+3. **Try the Example Prompts:**
+   * Copy and paste any of the example prompts above to explore the agent's capabilities.
+   * Experiment with your own questions combining portfolio analytics, market research, and client insights.
+
 Your new Cortex Agent is now configured and ready to be used in the Snowflake Intelligence chat. You can now use the prompts from the demo to test its functionality.
 
 ***
@@ -279,20 +294,5 @@ These are key prompts that can be used to explore Snowflake Intelligence for fin
 
 9. **Which high-net-worth clients haven't been contacted in the last 30 days?**
    * **Purpose:** This demonstrates **relationship management** capabilities, helping advisors maintain regular contact with their most important clients.
-
-***
-
-### **Testing Your Agent**
-
-1. **Navigate to Snowflake Intelligence:**
-   * In Snowsight, go to **AI & ML**.
-   * Select **Snowflake Intelligence**.
-
-2. **Select Your Agent:**
-   * Choose `FINANCIAL_ADVISOR_AGENT` from the agent dropdown.
-
-3. **Try the Example Prompts:**
-   * Copy and paste any of the example prompts above to explore the agent's capabilities.
-   * Experiment with your own questions combining portfolio analytics, market research, and client insights.
 
 ***
