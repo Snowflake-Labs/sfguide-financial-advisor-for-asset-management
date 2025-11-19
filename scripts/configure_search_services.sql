@@ -58,7 +58,7 @@ SELECT
     relative_path AS file_name,
     SPLIT_PART(SPLIT_PART(relative_path, '_', 3), '.', 1) AS company_ticker,
     SPLIT_PART(SPLIT_PART(relative_path, '_', 4), '.', 1) AS report_date,
-    SNOWFLAKE.CORTEX.PARSE_DOCUMENT('@FINANCIAL_ADVISOR_STAGE', relative_path, {'mode': 'LAYOUT'}) AS content
+    SNOWFLAKE.CORTEX.PARSE_DOCUMENT('@FINANCIAL_ADVISOR_STAGE', relative_path, OBJECT_CONSTRUCT('mode', 'LAYOUT')) AS content
 FROM DIRECTORY('@FINANCIAL_ADVISOR_STAGE')
 WHERE relative_path LIKE 'equity_research_%';
 
@@ -67,7 +67,7 @@ INSERT INTO FED_DOCUMENTS (file_name, document_type, content)
 SELECT 
     relative_path AS file_name,
     'FOMC_Minutes' AS document_type,
-    SNOWFLAKE.CORTEX.PARSE_DOCUMENT('@FINANCIAL_ADVISOR_STAGE', relative_path, {'mode': 'LAYOUT'}) AS content
+    SNOWFLAKE.CORTEX.PARSE_DOCUMENT('@FINANCIAL_ADVISOR_STAGE', relative_path, OBJECT_CONSTRUCT('mode', 'LAYOUT')) AS content
 FROM DIRECTORY('@FINANCIAL_ADVISOR_STAGE')
 WHERE relative_path LIKE 'Fed_%';
 
@@ -77,7 +77,7 @@ SELECT
     relative_path AS file_name,
     SPLIT_PART(relative_path, '_', 1) AS company_ticker,
     SPLIT_PART(SPLIT_PART(relative_path, '_', 3), '.', 1) AS filing_year,
-    SNOWFLAKE.CORTEX.PARSE_DOCUMENT('@FINANCIAL_ADVISOR_STAGE', relative_path, {'mode': 'LAYOUT'}) AS content
+    SNOWFLAKE.CORTEX.PARSE_DOCUMENT('@FINANCIAL_ADVISOR_STAGE', relative_path, OBJECT_CONSTRUCT('mode', 'LAYOUT')) AS content
 FROM DIRECTORY('@FINANCIAL_ADVISOR_STAGE')
 WHERE relative_path LIKE '%_10K_excerpts_%';
 
@@ -86,7 +86,7 @@ INSERT INTO MARKET_COMMENTARY_DOCUMENTS (file_name, publication_date, content)
 SELECT 
     relative_path AS file_name,
     SPLIT_PART(SPLIT_PART(relative_path, '_', 3), '.', 1) AS publication_date,
-    SNOWFLAKE.CORTEX.PARSE_DOCUMENT('@FINANCIAL_ADVISOR_STAGE', relative_path, {'mode': 'LAYOUT'}) AS content
+    SNOWFLAKE.CORTEX.PARSE_DOCUMENT('@FINANCIAL_ADVISOR_STAGE', relative_path, OBJECT_CONSTRUCT('mode', 'LAYOUT')) AS content
 FROM DIRECTORY('@FINANCIAL_ADVISOR_STAGE')
 WHERE relative_path LIKE 'market_commentary_%';
 
