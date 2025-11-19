@@ -58,7 +58,7 @@ SELECT
     relative_path AS file_name,
     SPLIT_PART(SPLIT_PART(relative_path, '_', 3), '.', 1) AS company_ticker,
     SPLIT_PART(SPLIT_PART(relative_path, '_', 4), '.', 1) AS report_date,
-    SNOWFLAKE.CORTEX.PARSE_DOCUMENT('@FINANCIAL_ADVISOR_STAGE', relative_path, OBJECT_CONSTRUCT('mode', 'LAYOUT')) AS content
+    SNOWFLAKE.CORTEX.PARSE_DOCUMENT('@FINANCIAL_ADVISOR_STAGE', relative_path, {'mode': 'LAYOUT'}) AS content
 FROM DIRECTORY('@FINANCIAL_ADVISOR_STAGE')
 WHERE relative_path LIKE 'equity_research_%';
 
@@ -67,7 +67,7 @@ INSERT INTO FED_DOCUMENTS (file_name, document_type, content)
 SELECT 
     relative_path AS file_name,
     'FOMC_Minutes' AS document_type,
-    SNOWFLAKE.CORTEX.PARSE_DOCUMENT('@FINANCIAL_ADVISOR_STAGE', relative_path, OBJECT_CONSTRUCT('mode', 'LAYOUT')) AS content
+    SNOWFLAKE.CORTEX.PARSE_DOCUMENT('@FINANCIAL_ADVISOR_STAGE', relative_path, {'mode': 'LAYOUT'}) AS content
 FROM DIRECTORY('@FINANCIAL_ADVISOR_STAGE')
 WHERE relative_path LIKE 'Fed_%';
 
@@ -77,7 +77,7 @@ SELECT
     relative_path AS file_name,
     SPLIT_PART(relative_path, '_', 1) AS company_ticker,
     SPLIT_PART(SPLIT_PART(relative_path, '_', 3), '.', 1) AS filing_year,
-    SNOWFLAKE.CORTEX.PARSE_DOCUMENT('@FINANCIAL_ADVISOR_STAGE', relative_path, OBJECT_CONSTRUCT('mode', 'LAYOUT')) AS content
+    SNOWFLAKE.CORTEX.PARSE_DOCUMENT('@FINANCIAL_ADVISOR_STAGE', relative_path, {'mode': 'LAYOUT'}) AS content
 FROM DIRECTORY('@FINANCIAL_ADVISOR_STAGE')
 WHERE relative_path LIKE '%_10K_excerpts_%';
 
@@ -86,7 +86,7 @@ INSERT INTO MARKET_COMMENTARY_DOCUMENTS (file_name, publication_date, content)
 SELECT 
     relative_path AS file_name,
     SPLIT_PART(SPLIT_PART(relative_path, '_', 3), '.', 1) AS publication_date,
-    SNOWFLAKE.CORTEX.PARSE_DOCUMENT('@FINANCIAL_ADVISOR_STAGE', relative_path, OBJECT_CONSTRUCT('mode', 'LAYOUT')) AS content
+    SNOWFLAKE.CORTEX.PARSE_DOCUMENT('@FINANCIAL_ADVISOR_STAGE', relative_path, {'mode': 'LAYOUT'}) AS content
 FROM DIRECTORY('@FINANCIAL_ADVISOR_STAGE')
 WHERE relative_path LIKE 'market_commentary_%';
 
@@ -101,19 +101,17 @@ CREATE OR REPLACE TABLE EQUITY_RESEARCH_CHUNKS (
     company_ticker STRING,
     report_date STRING,
     chunk_id INTEGER,
-    chunk_text STRING,
-    file_url STRING
+    chunk_text STRING
 );
 
 -- Chunk Equity Research Documents
-INSERT INTO EQUITY_RESEARCH_CHUNKS (original_file_name, company_ticker, report_date, chunk_id, chunk_text, file_url)
+INSERT INTO EQUITY_RESEARCH_CHUNKS (original_file_name, company_ticker, report_date, chunk_id, chunk_text)
 SELECT 
     e.file_name,
     e.company_ticker,
     e.report_date,
     ROW_NUMBER() OVER (PARTITION BY e.file_name ORDER BY chunks.index) AS chunk_id,
-    chunks.value::STRING AS chunk_text,
-    BUILD_SCOPED_FILE_URL('@FINANCIAL_ADVISOR_STAGE', e.file_name) AS file_url
+    chunks.value::STRING AS chunk_text
 FROM EQUITY_RESEARCH_DOCUMENTS e,
 LATERAL FLATTEN(
     SNOWFLAKE.CORTEX.SPLIT_TEXT_RECURSIVE_CHARACTER(
@@ -129,18 +127,16 @@ CREATE OR REPLACE TABLE FED_DOCUMENTS_CHUNKS (
     original_file_name STRING,
     document_type STRING,
     chunk_id INTEGER,
-    chunk_text STRING,
-    file_url STRING
+    chunk_text STRING
 );
 
 -- Chunk Fed Documents
-INSERT INTO FED_DOCUMENTS_CHUNKS (original_file_name, document_type, chunk_id, chunk_text, file_url)
+INSERT INTO FED_DOCUMENTS_CHUNKS (original_file_name, document_type, chunk_id, chunk_text)
 SELECT 
     f.file_name,
     f.document_type,
     ROW_NUMBER() OVER (PARTITION BY f.file_name ORDER BY chunks.index) AS chunk_id,
-    chunks.value::STRING AS chunk_text,
-    BUILD_SCOPED_FILE_URL('@FINANCIAL_ADVISOR_STAGE', f.file_name) AS file_url
+    chunks.value::STRING AS chunk_text
 FROM FED_DOCUMENTS f,
 LATERAL FLATTEN(
     SNOWFLAKE.CORTEX.SPLIT_TEXT_RECURSIVE_CHARACTER(
@@ -157,19 +153,17 @@ CREATE OR REPLACE TABLE TENK_EXCERPTS_CHUNKS (
     company_ticker STRING,
     filing_year STRING,
     chunk_id INTEGER,
-    chunk_text STRING,
-    file_url STRING
+    chunk_text STRING
 );
 
 -- Chunk 10-K Excerpts Documents
-INSERT INTO TENK_EXCERPTS_CHUNKS (original_file_name, company_ticker, filing_year, chunk_id, chunk_text, file_url)
+INSERT INTO TENK_EXCERPTS_CHUNKS (original_file_name, company_ticker, filing_year, chunk_id, chunk_text)
 SELECT 
     t.file_name,
     t.company_ticker,
     t.filing_year,
     ROW_NUMBER() OVER (PARTITION BY t.file_name ORDER BY chunks.index) AS chunk_id,
-    chunks.value::STRING AS chunk_text,
-    BUILD_SCOPED_FILE_URL('@FINANCIAL_ADVISOR_STAGE', t.file_name) AS file_url
+    chunks.value::STRING AS chunk_text
 FROM TENK_EXCERPTS_DOCUMENTS t,
 LATERAL FLATTEN(
     SNOWFLAKE.CORTEX.SPLIT_TEXT_RECURSIVE_CHARACTER(
@@ -185,18 +179,16 @@ CREATE OR REPLACE TABLE MARKET_COMMENTARY_CHUNKS (
     original_file_name STRING,
     publication_date STRING,
     chunk_id INTEGER,
-    chunk_text STRING,
-    file_url STRING
+    chunk_text STRING
 );
 
 -- Chunk Market Commentary Documents
-INSERT INTO MARKET_COMMENTARY_CHUNKS (original_file_name, publication_date, chunk_id, chunk_text, file_url)
+INSERT INTO MARKET_COMMENTARY_CHUNKS (original_file_name, publication_date, chunk_id, chunk_text)
 SELECT 
     m.file_name,
     m.publication_date,
     ROW_NUMBER() OVER (PARTITION BY m.file_name ORDER BY chunks.index) AS chunk_id,
-    chunks.value::STRING AS chunk_text,
-    BUILD_SCOPED_FILE_URL('@FINANCIAL_ADVISOR_STAGE', m.file_name) AS file_url
+    chunks.value::STRING AS chunk_text
 FROM MARKET_COMMENTARY_DOCUMENTS m,
 LATERAL FLATTEN(
     SNOWFLAKE.CORTEX.SPLIT_TEXT_RECURSIVE_CHARACTER(
@@ -215,13 +207,14 @@ ALTER WAREHOUSE FINANCIAL_ADVISOR_DEMO_WH SET WAREHOUSE_SIZE = 'X-SMALL';
 -- =====================================================
 
 -- Equity Research Search Service
+-- Equity Research Search Service
 CREATE OR REPLACE CORTEX SEARCH SERVICE EQUITY_RESEARCH_SEARCH_SERVICE
     ON CHUNK_TEXT
-    ATTRIBUTES COMPANY_TICKER, REPORT_DATE, ORIGINAL_FILE_NAME, CHUNK_ID, FILE_URL
+    ATTRIBUTES COMPANY_TICKER, REPORT_DATE, ORIGINAL_FILE_NAME, CHUNK_ID
     WAREHOUSE = FINANCIAL_ADVISOR_DEMO_WH
     TARGET_LAG = '1 hour'
     AS (
-        SELECT CHUNK_TEXT, COMPANY_TICKER, REPORT_DATE, ORIGINAL_FILE_NAME, CHUNK_ID, FILE_URL
+        SELECT CHUNK_TEXT, COMPANY_TICKER, REPORT_DATE, ORIGINAL_FILE_NAME, CHUNK_ID
         FROM EQUITY_RESEARCH_CHUNKS
     );
 
@@ -239,75 +232,32 @@ CREATE OR REPLACE CORTEX SEARCH SERVICE CLIENT_TRANSCRIPTS_SEARCH_SERVICE
 -- Federal Reserve Documents Search Service
 CREATE OR REPLACE CORTEX SEARCH SERVICE FED_DOCUMENTS_SEARCH_SERVICE
     ON CHUNK_TEXT
-    ATTRIBUTES DOCUMENT_TYPE, ORIGINAL_FILE_NAME, CHUNK_ID, FILE_URL
+    ATTRIBUTES DOCUMENT_TYPE, ORIGINAL_FILE_NAME, CHUNK_ID
     WAREHOUSE = FINANCIAL_ADVISOR_DEMO_WH
     TARGET_LAG = '1 hour'
     AS (
-        SELECT CHUNK_TEXT, DOCUMENT_TYPE, ORIGINAL_FILE_NAME, CHUNK_ID, FILE_URL
+        SELECT CHUNK_TEXT, DOCUMENT_TYPE, ORIGINAL_FILE_NAME, CHUNK_ID
         FROM FED_DOCUMENTS_CHUNKS
     );
 
 -- Market Commentary Search Service
 CREATE OR REPLACE CORTEX SEARCH SERVICE MARKET_COMMENTARY_SEARCH_SERVICE
     ON CHUNK_TEXT
-    ATTRIBUTES PUBLICATION_DATE, ORIGINAL_FILE_NAME, CHUNK_ID, FILE_URL
+    ATTRIBUTES PUBLICATION_DATE, ORIGINAL_FILE_NAME, CHUNK_ID
     WAREHOUSE = FINANCIAL_ADVISOR_DEMO_WH
     TARGET_LAG = '1 hour'
     AS (
-        SELECT CHUNK_TEXT, PUBLICATION_DATE, ORIGINAL_FILE_NAME, CHUNK_ID, FILE_URL
+        SELECT CHUNK_TEXT, PUBLICATION_DATE, ORIGINAL_FILE_NAME, CHUNK_ID
         FROM MARKET_COMMENTARY_CHUNKS
     );
 
 -- 10-K Excerpts Search Service
 CREATE OR REPLACE CORTEX SEARCH SERVICE TENK_EXCERPTS_SEARCH_SERVICE
     ON CHUNK_TEXT
-    ATTRIBUTES COMPANY_TICKER, FILING_YEAR, ORIGINAL_FILE_NAME, CHUNK_ID, FILE_URL
+    ATTRIBUTES COMPANY_TICKER, FILING_YEAR, ORIGINAL_FILE_NAME, CHUNK_ID
     WAREHOUSE = FINANCIAL_ADVISOR_DEMO_WH
     TARGET_LAG = '1 hour'
     AS (
-        SELECT CHUNK_TEXT, COMPANY_TICKER, FILING_YEAR, ORIGINAL_FILE_NAME, CHUNK_ID, FILE_URL
+        SELECT CHUNK_TEXT, COMPANY_TICKER, FILING_YEAR, ORIGINAL_FILE_NAME, CHUNK_ID
         FROM TENK_EXCERPTS_CHUNKS
     );
-
--- =====================================================
--- AUTOMATED URL REFRESH SYSTEM
--- =====================================================
-
--- Scoped file URLs have longer expiration, but refresh periodically to ensure links remain valid
--- Refresh twice daily to keep download links active
-
-CREATE OR REPLACE TASK REFRESH_CHUNK_URLS_TASK
-    WAREHOUSE = FINANCIAL_ADVISOR_DEMO_WH
-    SCHEDULE = 'USING CRON 0 1,13 * * * America/Los_Angeles'  -- Runs twice daily at 1:00 AM and 1:00 PM PST
-    COMMENT = 'Refreshes scoped file URLs every 12 hours to keep document links valid'
-AS
-BEGIN
-    -- Update Equity Research Chunk Table URLs
-    UPDATE EQUITY_RESEARCH_CHUNKS
-    SET FILE_URL = BUILD_SCOPED_FILE_URL('@FINANCIAL_ADVISOR_STAGE', ORIGINAL_FILE_NAME);
-    
-    -- Update Fed Documents Chunk Table URLs
-    UPDATE FED_DOCUMENTS_CHUNKS
-    SET FILE_URL = BUILD_SCOPED_FILE_URL('@FINANCIAL_ADVISOR_STAGE', ORIGINAL_FILE_NAME);
-    
-    -- Update 10-K Excerpts Chunk Table URLs
-    UPDATE TENK_EXCERPTS_CHUNKS
-    SET FILE_URL = BUILD_SCOPED_FILE_URL('@FINANCIAL_ADVISOR_STAGE', ORIGINAL_FILE_NAME);
-    
-    -- Update Market Commentary Chunk Table URLs
-    UPDATE MARKET_COMMENTARY_CHUNKS
-    SET FILE_URL = BUILD_SCOPED_FILE_URL('@FINANCIAL_ADVISOR_STAGE', ORIGINAL_FILE_NAME);
-END;
-
--- Activate the task to start automatic URL refresh
-ALTER TASK REFRESH_CHUNK_URLS_TASK RESUME;
-
--- =====================================================
--- VERIFICATION QUERIES
--- =====================================================
-
--- Query to check task status
--- SELECT * FROM TABLE(INFORMATION_SCHEMA.TASK_HISTORY(TASK_NAME => 'REFRESH_CHUNK_URLS_TASK')) ORDER BY SCHEDULED_TIME DESC LIMIT 10;
-
--- Verify scoped file URLs are being generated correctly
--- SELECT original_file_name, file_url FROM EQUITY_RESEARCH_CHUNKS LIMIT 5;
